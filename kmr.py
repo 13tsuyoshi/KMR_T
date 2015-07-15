@@ -4,9 +4,9 @@ Author:
 KMR (Kandori-Mailath-Rob) Model
 
 """
+from __future__ import division
 import numpy as np
 import quantecon as qe
-
 
 def kmr_markov_matrix(p, N, epsilon):
     """
@@ -14,8 +14,29 @@ def kmr_markov_matrix(p, N, epsilon):
     two acitons.
 
     """
-    # KMR の遷移確率行列を返す関数を書く
-    P = np.empty((N+1, N+1))  # たとえばこんな感じで始めて P の要素を埋めていく
+    epsilon=e
+    senni_gyoretu=np.zeros((n+1, n+1))
+    for i in range(n+1):
+        if i/n > p and i!=n:
+            senni_gyoretu[i][i+1]=(1-i/n)*(1-e/2)
+            senni_gyoretu[i][i-1]=i/n*(e/2)
+            senni_gyoretu[i][i]=1-((1-i/n)*(1-e/2))-(i/n*e/2)
+        if i/n < p and i!=0:
+            senni_gyoretu[i][i+1]=(1-i/n)*(e/2)
+            senni_gyoretu[i][i-1]=i/n*(1-e/2)
+            senni_gyoretu[i][i]=1-((1-i/n)*(e/2))-(i/n*(1-e/2))
+        if i/n == p:    
+            senni_gyoretu[i][i+1]=1/2-i/2/n
+            senni_gyoretu[i][i-1]=i/2/n
+            senni_gyoretu[i][i]=1/2
+        if i==n:
+            senni_gyoretu[i][i-1]=e/2
+            senni_gyoretu[i][i]=1-e/2
+        if i==0:
+            senni_gyoretu[i][i+1]=e/2
+            senni_gyoretu[i][i]=1-e/2
+    return senni_gyoretu
+    
 
 
 class KMR(object):
@@ -57,9 +78,4 @@ class KMR(object):
         return self.mc.simulate(ts_length, init, num_reps)
 
     def compute_stationary_distribution(self):
-        # mc.stationary_distributions の戻り値は2次元配列．
-        # 各行に定常分布が入っている (一般には複数)．
-        # epsilon > 0 のときは唯一，epsilon == 0 のときは複数ありえる．
-        # espilon > 0 のみを想定して唯一と決め打ちするか，
-        # 0か正かで分岐するかは自分で決める．
-        return self.mc.stationary_distributions[0]  # これは唯一と決め打ちの場合
+        return self.mc.stationary_distributions[0]  
